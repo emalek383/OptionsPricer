@@ -1,9 +1,11 @@
 import numpy as np
 from functools import partial
 from scipy.stats import norm
+import streamlit as st
 
 DEFAULT_NUM_STEPS = 1_000
 
+@st.cache_data
 def calculate_vanilla_BS(S, K, T, vol, r, call = True):
     "Calculate BS price of call/put"
     d1 = (np.log(S/K) + (r + vol**2/2)*T)/(vol*np.sqrt(T))
@@ -134,7 +136,8 @@ def price_barrier_option_bs(S, K, T, r, vol, barrier, barrier_type, call=True):
 def calculate_barrier_option_bs(S, K, T, r, vol, barrier, barrier_type, call=True):
     S = np.atleast_1d(S)
     result = price_barrier_option_bs(S, K, T, r, vol, barrier, barrier_type, call = call)
-    return np.squeeze(result) if S.size == 1 else result
+    #return np.squeeze(result) if S.size == 1 else result
+    return result
 
 class log_normal_model():
     def __init__(self, stock_value, vol):
@@ -185,6 +188,7 @@ def vanilla_payoff(S, K, call):
 def digital_payoff(S, K, call):
     return (S > K).astype(int) if call else (S < K).astype(int)
 
+@st.cache_data
 def calculate_price(S, K, T, vol, r, call=True, american=False, option_type='vanilla', method='bs', **kwargs):
     """
     Calculate the price of an option based on the given parameters.
