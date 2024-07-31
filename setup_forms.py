@@ -87,13 +87,6 @@ def setup_heatmap_form(form):
     max_spot = form.number_input("Max Spot Price",
                                  min_value = float(state.option_params['spot']),
                                  value = state.option_params['spot'] + 20.00)
-    # min_vol = form.slider("Min Volatility (%)",
-    #                       min_value = 1,
-    #                       max_value = max(int(100*state.option_params['vol']), 2),
-    #                       value = max(int(100*state.option_params['vol'] - 20), 1))
-    # max_vol = form.slider("Max Volatility (%)",
-    #                       min_value = int(100*state.option_params['vol']),
-    #                       value = 100)
     
     min_vol, max_vol = form.slider("Volatility Range (%)",
                                    value = [1, 100],
