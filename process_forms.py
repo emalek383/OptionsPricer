@@ -272,8 +272,5 @@ def process_heatmap_form(min_spot = DEFAULT_MIN_SPOT,
     put_params['price'] = state.option_params['put_value']
     put_params['call'] = False
     
-    print(f"Call params: {call_params}")
-    print(f"Put params: {put_params}")
-    
     state['call_option_pnl'], state['heatmap_spots'], state['heatmap_vols'] = calculate_option_pnl(call_params, state.heatmap_params, state.option_params['method'])
     state['put_option_pnl'], state['heatmap_spots'], state['heatmap_vols'] = calculate_option_pnl(put_params, state.heatmap_params, state.option_params['method'])
