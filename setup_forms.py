@@ -1,10 +1,27 @@
+""" Module for setting up the streamlit forms. """
+
+import streamlit as st
+
 from process_forms import process_options_form, process_heatmap_form
 from data_loader import download_data
-import streamlit as st
 
 state = st.session_state
 
 def setup_options_form(form):
+    """
+    Setup the form for entering the options parameters.
+
+    Parameters
+    ----------
+    form : st.container
+        Container that will be used as the form.
+
+    Returns
+    -------
+    None.
+
+    """
+
     asset = form.text_input("Optional: Asset (ticker)",
                             value = None,
                             help = "Optional: enter a ticker to automatically get the spot price.")
@@ -24,7 +41,7 @@ def setup_options_form(form):
                                value = 100.00,
                                min_value = 0.00)
     
-    time_to_maturity = form.number_input("Time to Maturity (Years)",
+    time_to_maturity = form.number_input("Time to Expiry (Years)",
                                          1.00)
     
     vol = form.number_input("Volatility (%)",
@@ -77,9 +94,22 @@ def setup_options_form(form):
         error = process_options_form(asset, spot, strike, time_to_maturity, vol, risk_free_rate, american, option_type, barrier_type, barrier, method)
         if error:
             form.error(error)
-    return
 
 def setup_heatmap_form(form):
+    """
+    Setup the form for choosing the heatmap parameters (min/max vol and spot).
+
+    Parameters
+    ----------
+    form : st.container
+        Container that will house the form.
+
+    Returns
+    -------
+    None.
+
+    """
+    
     min_spot = form.number_input("Min Spot Price",
                                  min_value = 0.00,
                                  max_value = float(state.option_params['spot']),
@@ -98,6 +128,4 @@ def setup_heatmap_form(form):
     
     process_heatmap_form(min_spot, max_spot, min_vol_decimal, max_vol_decimal)
     
-    # form.button(label = "Compute Heatmap", on_click = process_heatmap_form, args = (min_spot, max_spot, min_vol / 100, max_vol / 100))
     
-    return

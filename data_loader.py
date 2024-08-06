@@ -1,5 +1,6 @@
+""" Download stock data from yahoo finance. """
+
 import yfinance as yf
-import pandas as pd
 
 def download_data(ticker):
     """
@@ -7,17 +8,13 @@ def download_data(ticker):
 
     Parameters
     ----------
-    stocks : list(str)
-        List of stock tickers.
-    start : datetime
-        Start date.
-    end : datetime
-        End date.
+    ticker : str
+        Stock ticker.
 
     Returns
     -------
-    stockData : pd.DataFrame
-        Dataframe containing the closing price of the stock data.
+    stockData : pd.Series
+        Series containing the closing price of the stock data.
 
     """
     
