@@ -1,3 +1,8 @@
 matplotlib
 scipy
 yfinance
+streamlit_javascript
+PyYAML
+ua-parser
+user-agents
+streamlit>=1.10.0
