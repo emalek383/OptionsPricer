@@ -23,7 +23,8 @@
 
 .narrow-card {
     flex: 0 1 auto;
-    width: 40%;
+    width: auto;
+    max-width: 40%;
 }
 
 .card-header {
