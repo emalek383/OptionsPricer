@@ -16,4 +16,5 @@ streamlit run main.py
 
 ## Future plans
 - Include other pricing methods, e.g. Monte Carlo.
+- Include jump-diffusion processes.
 - Include other Exotic options.
