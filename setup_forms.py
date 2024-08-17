@@ -28,6 +28,7 @@ def setup_options_form(form):
     
     default_value = None
     if asset:
+        asset = asset.upper()
         default_value = download_data(asset)
     if not default_value:
         default_value = 100.00
