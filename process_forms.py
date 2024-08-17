@@ -197,7 +197,9 @@ def process_options_form(asset = None,
     
     error = ""
     
-    state.option_params['asset'] = asset.upper()
+    if asset:
+        asset = asset.upper()
+    state.option_params['asset'] = asset
     if not asset:
         state.option_params['spot'] = spot
     else:
