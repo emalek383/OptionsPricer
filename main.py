@@ -47,11 +47,13 @@ if 'loaded' not in state:
 load_css('styles/style.css')
 
 with st.sidebar:
-    option_parameters_expander = st.expander("Select option parameters", expanded = True)
-    option_parameters_form = option_parameters_expander.container(border = False)
+    option_parameters_form = st.container(border = False)
     
-    heatmap_parameters_expander = st.expander("Adjust heatmap parameters", expanded = True)
-    heatmap_parameters_form = heatmap_parameters_expander.container(border = False)
+    #option_parameters_expander = st.expander("Select option parameters", expanded = True)
+    #option_parameters_form = option_parameters_expander.container(border = False)
+    
+    # heatmap_parameters_expander = st.expander("Adjust heatmap parameters", expanded = True)
+    # heatmap_parameters_form = heatmap_parameters_expander.container(border = False)
     
 st.header("Options Pricing Tool")
 parameters_display = st.container(border = False)
@@ -64,7 +66,6 @@ if not state.loaded:
     state.loaded = True
 
 setup_options_form(option_parameters_form)
-setup_heatmap_form(heatmap_parameters_form)
 
 setup_options_params_display(parameters_display)
 setup_options_price_display(price_display)

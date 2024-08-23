@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from setup_forms import setup_heatmap_form
 from plot_functions import plot_heatmap
 
 state = st.session_state
@@ -24,47 +25,37 @@ def setup_options_params_display(display):
 
     """
     
-    
-    # Option style data
-    option_style = {
-        'Option Features': state.option_params['type'],
-        'Exercise Type': 'American' if state.option_params['american'] else 'European'
-    }
-    
-    option_style_columns_order = ['Option Features', 'Exercise Type']
-    if state.option_params['type'] == 'Barrier':
-        option_style['Option Features'] = f"Barrier ({state.option_params['barrier_type']})"
-    
-    # Option parameters data
-    option_params = {
-        'Spot Price': state.option_params['spot'],
-        'Strike Price': state.option_params['strike'],
-        'Volatility': state.option_params['vol'],
+    basic_params = {
+        'Type': state.option_params['type'],
+        'Exercise': 'American' if state.option_params['american'] else 'European',
+        'Strike': state.option_params['strike'],
         'Time to Expiry': f"{state.option_params['time']} years",
-        'Risk Free Rate': state.option_params['risk_free_rate'],
     }
     
-    params_columns_order = ['Spot Price', 'Strike Price', 'Volatility', 'Time to Expiry', 'Risk Free Rate']
-    
+    advanced_params = {}
     if state.option_params['type'] == 'Barrier':
-        option_params['Barrier'] = state.option_params['barrier']
-        params_columns_order.append('Barrier')
+        advanced_params['Barrier Type'] = state.option_params['barrier_type']
+        advanced_params['Barrier'] = state.option_params['barrier']
+    elif state.option_params['type'] == 'Asian':
+        advanced_params['Averaging'] = state.option_params['averaging_type']
+        advanced_params['Frequency'] = state.option_params['averaging_freq']
+
+    asset_params = {'Spot Price': state.option_params['spot'],
+                    'Volatility': state.option_params['vol'],
+                    'Risk-free Rate': state.option_params['risk_free_rate'],
+                    }
     
     if state.option_params['asset']:
-        option_params['Asset'] = state.option_params['asset']
-        params_columns_order.insert(0, 'Asset')
-        
-    subclass = 'narrow-card'
+        asset_params['Asset'] = state.option_params['asset']
+    
     if not state.is_session_pc:
-        mapping = {'Spot Price': 'Spot', 'Strike Price': 'Strike', 'Volatility': 'Vol', 'Time to Expiry': 'T', 'Risk Free Rate': 'R_F'}
-        for key, value in option_params.items():
-            if key not in mapping:
-                mapping[key] = key
-                
-        option_params = {mapping.get(key, key): value for key, value in option_params.items()}
-        params_columns_order = [mapping.get(col, col) for col in params_columns_order]
-        option_params['T'] = option_params['T'].replace('years', '')
-        subclass = ''
+        mobile_mapping  = {'Spot Price': 'Spot', 'Strike Price': 'Strike', 'Volatility': 'Vol', 'Time to Expiry': 'T',
+                   'Exercise Type': 'Exercise'}
+        
+        basic_params = {mobile_mapping.get(k, k): v for k, v in basic_params.items()}
+        advanced_params = {mobile_mapping.get(k, k): v for k, v in advanced_params.items()}
+        asset_params = {mobile_mapping.get(k, k): v for k, v in asset_params.items()}
+        basic_params['T'] = basic_params['T'].replace('years', '')
     
     # Formatting functions
     def format_percentage(value):
@@ -73,23 +64,38 @@ def setup_options_params_display(display):
     def format_float(value):
         return f'{value:.2f}'
     
-    # Apply formatting
-    for key, value in option_params.items():
-        if key in ['Volatility', 'Risk Free Rate']:
-            option_params[key] = format_percentage(value)
-        elif isinstance(value, (float, int)):
-            option_params[key] = format_float(value)
+
+    for params in [basic_params, advanced_params, asset_params]:
+        for key, value in params.items():
+            if key in ['Volatility', 'Vol', 'Risk-free Rate', 'R_F']:
+                params[key] = format_percentage(value)
+            elif isinstance(value, (float, int)):
+                params[key] = format_float(value)
     
-    style_card = create_card("Option Style", option_style, option_style_columns_order, subclass = subclass)
-    params_card = create_card("Option Parameters", option_params, params_columns_order)
-    display.markdown(
-        f"""
-            <div class='card-container'>
-                {style_card}
-                {params_card}
-            </div>
-        """,
-        unsafe_allow_html=True)
+    # Create cards
+    basic_card = create_card("Basic Option Parameters", basic_params, list(basic_params.keys()))
+    asset_card = create_card("Asset Parameters", asset_params, list(asset_params.keys()))
+    
+    if advanced_params:
+        advanced_card = create_card("Advanced Option Parameters", advanced_params, list(advanced_params.keys()))
+        display.markdown(
+            f"""
+                <div class='card-container'>
+                    {basic_card}
+                    {advanced_card}
+                    {asset_card}
+                </div>
+            """,
+            unsafe_allow_html=True)
+    else:
+        display.markdown(
+            f"""
+                <div class='card-container'>
+                    {basic_card}
+                    {asset_card}
+                </div>
+            """,
+            unsafe_allow_html=True)
 
 def create_card(title, data, columns, subclass = ""):
     """
@@ -183,6 +189,9 @@ def setup_heatmap_display(display):
     """
     
     display.header("PnL Heatmaps for varying spot price and volatility")
+    
+    heatmap_parameters_form = display.expander("Adjust Heatmap Parameters", expanded = False)
+    setup_heatmap_form(heatmap_parameters_form)
     
     display.write("See the PnL of the Put and Call options for varying spot price and volatility.")
     
